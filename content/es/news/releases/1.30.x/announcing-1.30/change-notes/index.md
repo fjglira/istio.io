@@ -1,7 +1,7 @@
 ---
 title: Notas de Cambios de Istio 1.30.0
 linktitle: 1.30.0
-subtitle: Versión Menor
+subtitle: Versión Principal
 description: Notas de versión de Istio 1.30.0.
 publishdate: 2026-05-18
 release: 1.30.0
@@ -41,7 +41,9 @@ aliases:
 
 - **Añadido** soporte para cargar secrets remotos multiclúster desde una ruta del sistema de archivos local especificada por
   `PILOT_MULTICLUSTER_KUBECONFIG_PATH`. Cuando se establece, Istiod monitorea el directorio montado (para
-  claves `.yaml` o `.yml`) y actualiza dinámicamente los registros de clústeres remotos.
+  claves `.yaml` o `.yml`) y actualiza dinámicamente los registros de clústeres remotos. Si tanto
+  `PILOT_MULTICLUSTER_KUBECONFIG_PATH` como `LOCAL_CLUSTER_SECRET_WATCHER` están configurados,
+  `PILOT_MULTICLUSTER_KUBECONFIG_PATH` tiene precedencia.
   ([Issue #58927](https://github.com/istio/istio/issues/58927))
 
 - **Añadido** soporte experimental para agentgateway en Istio. La configuración de agentgateway
@@ -56,7 +58,8 @@ aliases:
 
 - **Añadida** la posibilidad de configurar los tamaños iniciales de la ventana de flujo y conexión HTTP/2 para los clústeres HBONE CONNECT upstream
   (generados para waypoints y gateways east-west) mediante los flags de características
-  `PILOT_HBONE_INITIAL_STREAM_WINDOW_SIZE` y `PILOT_HBONE_INITIAL_CONNECTION_WINDOW_SIZE`.
+  `PILOT_HBONE_INITIAL_STREAM_WINDOW_SIZE` y `PILOT_HBONE_INITIAL_CONNECTION_WINDOW_SIZE`. Pueden usarse para
+  reducir el buffering no deseado.
   ([Issue #59961](https://github.com/istio/istio/issues/59961))
 
 - **Añadida** una anotación `istio.io/connect-strategy` a los `ServiceEntries` para permitir diferentes semánticas de conexión DNS. Los usuarios pueden establecer esto a `RACE_FIRST_TCP_CONNECT` cuando los servidores DNS devuelven múltiples registros A y el cliente debe probar cada endpoint y elegir el primero que resulte en una conexión TCP exitosa.
@@ -65,7 +68,7 @@ aliases:
 - **Añadido** soporte de prioridad de failover para clústeres DNS.
   ([Issue #58674](https://github.com/istio/istio/issues/58674))
 
-- **Añadido** el tiempo de espera de DNS upstream configurable mediante la variable de entorno `DNS_FORWARD_TIMEOUT`. El tiempo de espera predeterminado sigue siendo 5 segundos.
+- **Añadido** el tiempo de espera de DNS upstream configurable mediante la variable de entorno `DNS_FORWARD_TIMEOUT`. El tiempo de espera predeterminado sigue siendo 5 segundos. Los usuarios pueden aumentar el tiempo de espera para servidores DNS de alta latencia o reducirlo para minimizar la latencia de impacto al usuario cuando los servidores DNS no responden. Se configura mediante `DNS_FORWARD_TIMEOUT=10s` en el contenedor `istio-proxy` o de forma global mediante `proxyMetadata`.
   ([Issue #59813](https://github.com/istio/istio/issues/59813))
 
 - **Añadido** soporte para listeners TLS passthrough en gateways east-west, permitiendo que
